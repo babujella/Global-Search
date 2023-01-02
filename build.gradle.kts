@@ -33,13 +33,7 @@ dependencies {
     implementation("io.ktor:ktor-server-content-negotiation-jvm:$ktor_version")
     implementation("io.ktor:ktor-client-content-negotiation-jvm:$ktor_version")
 
-    // https://mvnrepository.com/artifact/org.json/json
-    // https://mvnrepository.com/artifact/com.google.code.gson/gson
     implementation("com.google.code.gson:gson:2.8.9")
-
-// https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
     implementation("com.fasterxml.jackson.core:jackson-databind:2.14.0")
-
-
     implementation("ch.qos.logback:logback-classic:1.2.11")
 }

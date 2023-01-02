@@ -1,35 +1,70 @@
 package com.ihcl_globalsearch.service
 
 import com.google.gson.Gson
-import com.google.gson.annotations.SerializedName
 import com.google.gson.reflect.TypeToken
-import com.ihcl_globalsearch.model.Spatial
+import com.ihcl_globalsearch.model.*
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.request.*
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
 
 class SpatialSearchService {
-    suspend fun spatialserachservice(pt:String, d:String,destination:String,brand_name:String):Spatial{
+    private val log: Logger = LoggerFactory.getLogger(javaClass)
+    val hoteList = ArrayList<Any>()
+    val spaList = ArrayList<Any>()
+    val restaurantList = ArrayList<Any>()
+    val destinationList = ArrayList<Any>()
+    suspend fun spatialserachservice(pt: String, d: String, destination: String, brand_name: String): FinalHotelRestaurantSpa {
         val client = HttpClient(CIO)
-        val response: String = client.get("http://localhost:8983/solr/Ihcls/select?&"){
+        val response: String = client.get("http://localhost:8983/solr/Ihcls/select?&") {
             url {
-                    parameters.append("q", "*:*")
-                    parameters.append("fq", "{!geofilt sfield=location}")
-                    parameters.append("pt", pt)
-                    parameters.append("d", d)
-                    parameters.append("rows", "2000")
-                    parameters.append("fq", "city:$destination")
-                    parameters.append("fq", "brand_name:$brand_name")
+                parameters.append("q", "*:*")
+                parameters.append("fq", "{!geofilt sfield=location}")
+                parameters.append("pt", pt)
+                parameters.append("d", d)
+                parameters.append("rows", "2000")
+                parameters.append("fq", "city:$destination")
+                parameters.append("fq", "brand_name:$brand_name")
 
             }
         }.body()
         val collectionType = object : TypeToken<Spatial>() {}.type
-        val res: Spatial = Gson().fromJson(response, collectionType) as Spatial
-        return res
+        val finalData: ArrayList<Doc2>? = (Gson().fromJson(response, collectionType) as Spatial).response?.docs
+        log.info(finalData.toString())
+
+        for (item in finalData!!) {
+            val s = item.hotel_name?.get(0).toString()
+            val dest = item.city
+            if (s != null) {
+                if (s.contains("Hotel")) {
+                    hoteList.add(s)
+                    if (dest != null) {
+                        destinationList.add(dest)
+                    }
+                }
+                if (s.contains("Spa") || s.contains("Resort")) {
+                    spaList.add(s)
+                    restaurantList.add(s)
+                    if (dest != null) {
+                        destinationList.add(dest)
+                    }
+                } else {
+                    hoteList.add(s)
+                    if (dest != null) {
+                        destinationList.add(dest)
+                    }
+                }
+            }
+        }
+        val destinationsList: Set<Any> = LinkedHashSet(destinationList)
+        log.info(destinationList.toString())
+        return FinalHotelRestaurantSpa(hoteList, spaList, restaurantList, destinationsList)
+
     }
-    suspend fun spatialserachservice1(pt:String,d:String):Root{
+    suspend fun spatialserachservice1(pt:String,d:String): FinalHotelRestaurantSpa {
         val client = HttpClient(CIO)
         val response: String = client.get("http://localhost:8983/solr/Ihcls/select?&"){
             url{
@@ -41,39 +76,35 @@ class SpatialSearchService {
             }
         }.body()
         val collectionType = object : TypeToken<Root>() {}.type
-        val res: Root = Gson().fromJson(response, collectionType) as Root
-        return  res
+        val latlongdata: ArrayList<Doc3>? = (Gson().fromJson(response, collectionType) as Root).response?.docs
+        log.info(latlongdata.toString())
+        for (item in latlongdata!!) {
+            val hotelname = item.hotel_name?.get(0).toString()
+            val city = item.city
+            if (hotelname != null) {
+                if (hotelname.contains("Hotel")) {
+                    hoteList.add(hotelname)
+                    if (city != null) {
+                        destinationList.add(city)
+                    }
+                }
+                if (hotelname.contains("Spa") || hotelname.contains("Resort")) {
+                    spaList.add(hotelname)
+                    restaurantList.add(hotelname)
+                    if (city != null) {
+                        destinationList.add(city)
+                    }
+                } else {
+                    hoteList.add(hotelname)
+                    if (city != null) {
+                        destinationList.add(city)
+                    }
+                }
+            }
+        }
+        val destination: Set<Any> = LinkedHashSet(destinationList)
+        var finalHotelRestaurantSpa1 = FinalHotelRestaurantSpa(hoteList, spaList, restaurantList, destination)
+        return finalHotelRestaurantSpa1
     }
 }
-data class Doc (
-    var hotel_name: ArrayList<String>? = null,
-    var city: ArrayList<String>? = null
-)
 
-data class Params (
-    var q: String? = null,
-    var pt: String? = null,
-    var d: String? = null,
-    var fq: String? = null
-)
-
-data class Response (
-    var numFound: Int = 0,
-    var start: Int = 0,
-    var numFoundExact: Boolean = false,
-    var docs: ArrayList<Doc>? = null
-    )
-
-data class ResponseHeader (
-    var zkConnected: Boolean = false,
-    var status: Int = 0,
-
-    @SerializedName("QTime")
-    var qTime: Int = 0,
-    var params: Params? = null
-    )
-
-class Root (
-    var responseHeader: ResponseHeader? = null,
-    var response: Response? = null
-)

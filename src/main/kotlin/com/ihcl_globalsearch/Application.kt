@@ -1,7 +1,7 @@
 package com.ihcl_globalsearch
 
+import com.ihcl_globalsearch.route.Configuremodules
 import com.ihcl_globalsearch.route.configureDestinationsRouting
-import com.ihcl_globalsearch.route.configureFilters
 import com.ihcl_globalsearch.route.spatialSearchRoute
 import configureHotelRestaurantSpaRouting
 import io.ktor.serialization.gson.*
@@ -19,10 +19,8 @@ fun Application.module() {
             setPrettyPrinting()
         }
     }
-    configureHotelRestaurantSpaRouting()
-    configureDestinationsRouting()
-    configureFilters()
-    spatialSearchRoute()
+    Configuremodules()
+
 }
 
 
