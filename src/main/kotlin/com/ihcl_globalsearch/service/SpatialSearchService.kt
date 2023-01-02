@@ -25,11 +25,9 @@ class SpatialSearchService {
 
             }
         }.body()
-        println("$pt $d $destination $brand_name")
         val collectionType = object : TypeToken<Spatial>() {}.type
         val res: Spatial = Gson().fromJson(response, collectionType) as Spatial
         return res
-
     }
     suspend fun spatialserachservice1(pt:String,d:String):Root{
         val client = HttpClient(CIO)

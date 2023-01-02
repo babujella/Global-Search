@@ -15,11 +15,11 @@ fun Application.spatialSearchRoute() {
             var pt = latlongdetails.pt
             var d = latlongdetails.d
             var city=latlongdetails.destination.city
-            var brand_name=latlongdetails.destination.brand_name
+            var brandName=latlongdetails.destination.brand_name
 
-            if ((city!=null && brand_name!=null) || (city!=null && brand_name==null )) {
+            if (city!=null && brandName!=null) {
 
-                var finaldata = SpatialSearchService().spatialserachservice(pt, d, city, brand_name).response?.docs
+                var finaldata = SpatialSearchService().spatialserachservice(pt, d, city, brandName).response?.docs
 
                 var hoteList = ArrayList<Any>()
                 var spaList = ArrayList<Any>()
@@ -85,12 +85,9 @@ fun Application.spatialSearchRoute() {
                         }
                     }
                 }
-                val s1: HashSet<Any> = HashSet(destinationList)
+                val s1: Set<Any> = LinkedHashSet(destinationList)
                 var finalHotelRestaurantSpa1 = FinalHotelRestaurantSpa(hoteList, spaList, restaurantList, s1)
-               println("value ${s1 is HashSet<Any>}")
                 call.respond(finalHotelRestaurantSpa1)
-                print(finalHotelRestaurantSpa1)
-
 
             }
         }

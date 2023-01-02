@@ -39,4 +39,7 @@ dependencies {
 
 // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
     implementation("com.fasterxml.jackson.core:jackson-databind:2.14.0")
+
+
+    implementation("ch.qos.logback:logback-classic:1.2.11")
 }

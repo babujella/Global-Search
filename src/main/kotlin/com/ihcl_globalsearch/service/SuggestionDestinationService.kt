@@ -11,7 +11,7 @@ import io.ktor.client.request.*
 class SuggestionDestinationService {
     suspend fun suggestionDestinations() :Destinations{
         val client = HttpClient(CIO)
-        val response: String = client.get("http://localhost:8983/solr/Ihcls/select?fl=city&indent=true&q.op=OR&q=*%3A*&rows=10").body()
+        val response: String = client.get("http://localhost:8983/solr/Ihcls/select?fl=city&indent=true&q.op=OR&q=*%3A*&rows=200").body()
         val collectionType = object : TypeToken<Destinations>() {}.type
         val res: Destinations = Gson().fromJson(response, collectionType) as Destinations
         return res
