@@ -1,25 +1,27 @@
-package com.ihcl_globalsearch.service
+package com.ihclglobalsearch.service
 
 import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.databind.JsonMappingException
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.google.gson.Gson
-import com.ihcl_globalsearch.model.FinalHotelRestaurantSpa
-import com.ihcl_globalsearch.route.SuggestionTerms
-import com.ihcl_globalsearch.route.Suggestions
-import io.ktor.client.*
-import io.ktor.client.call.*
-import io.ktor.client.engine.cio.*
-import io.ktor.client.request.*
+import com.ihclglobalsearch.dbconfig.Configuration
+import com.ihclglobalsearch.model.FinalHotelRestaurantSpa
+import com.ihclglobalsearch.route.SuggestionTerms
+import com.ihclglobalsearch.route.Suggestions
+import io.ktor.client.HttpClient
+import io.ktor.client.call.body
+import io.ktor.client.engine.cio.CIO
+import io.ktor.client.request.get
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-class Suggestions {
+class SuggestionHotelsRestaurantsSpa {
     private val log: Logger = LoggerFactory.getLogger(javaClass)
+    private val props = Configuration.env
     suspend fun suggestions(param:String): String {
         val client = HttpClient(CIO)
-        val response = client.get("http://localhost:8983/solr/Ihcls/suggest?"){
+        val response = client.get(props.suggestionsURL){
             url{
                 parameters.append("suggest","true")
                 parameters.append("suggest.build","true")
@@ -49,7 +51,7 @@ class Suggestions {
             destinationList.add(resp)
             if (usersuggestions != null) {
                 for (item in usersuggestions) {
-                    var hotelname = item.term
+                    val hotelname = item.term
                     if (hotelname != null) {
                         if (hotelname.contains("Hotel")) {
                             hoteList.add(item)
@@ -65,9 +67,9 @@ class Suggestions {
             val destination: Set<Any> = LinkedHashSet(destinationList)
             return FinalHotelRestaurantSpa(hoteList, spaList, restaurantList, destination)
         } catch (e: JsonMappingException) {
-            e.printStackTrace()
+            log.error("JsonMappingException", e)
         } catch (e: JsonProcessingException) {
-            e.printStackTrace()
+            log.error("JsonProcessingException", e)
         }
         return null
     }

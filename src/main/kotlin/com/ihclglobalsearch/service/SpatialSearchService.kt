@@ -1,25 +1,33 @@
-package com.ihcl_globalsearch.service
+package com.ihclglobalsearch.service
 
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.ihcl_globalsearch.model.*
-import io.ktor.client.*
-import io.ktor.client.call.*
-import io.ktor.client.engine.cio.*
-import io.ktor.client.request.*
+import com.ihclglobalsearch.dbconfig.Configuration
+import com.ihclglobalsearch.model.FinalHotelRestaurantSpa
+import com.ihclglobalsearch.model.Spatial
+import com.ihclglobalsearch.model.Root
+import com.ihclglobalsearch.model.Doc3
+import com.ihclglobalsearch.model.Doc2
+import io.ktor.client.HttpClient
+import io.ktor.client.call.body
+import io.ktor.client.engine.cio.CIO
+import io.ktor.client.request.get
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
 
 class SpatialSearchService {
     private val log: Logger = LoggerFactory.getLogger(javaClass)
-    val hoteList = ArrayList<Any>()
-    val spaList = ArrayList<Any>()
-    val restaurantList = ArrayList<Any>()
-    val destinationList = ArrayList<Any>()
-    suspend fun spatialserachservice(pt: String, d: String, destination: String, brand_name: String): FinalHotelRestaurantSpa {
+    private val hotelList = ArrayList<Any>()
+    private val spaList = ArrayList<Any>()
+    private val restaurantList = ArrayList<Any>()
+    private val destinationList = ArrayList<Any>()
+
+    private val props = Configuration.env
+    suspend fun spatialsearchService(pt: String, d: String, destination: String, brandName: String)
+    : FinalHotelRestaurantSpa {
         val client = HttpClient(CIO)
-        val response: String = client.get("http://localhost:8983/solr/Ihcls/select?&") {
+        val response: String = client.get(props.spatialSearchURL) {
             url {
                 parameters.append("q", "*:*")
                 parameters.append("fq", "{!geofilt sfield=location}")
@@ -27,7 +35,7 @@ class SpatialSearchService {
                 parameters.append("d", d)
                 parameters.append("rows", "2000")
                 parameters.append("fq", "city:$destination")
-                parameters.append("fq", "brand_name:$brand_name")
+                parameters.append("fq", "brand_name:$brandName")
 
             }
         }.body()
@@ -40,7 +48,7 @@ class SpatialSearchService {
             val dest = item.city
             if (s != null) {
                 if (s.contains("Hotel")) {
-                    hoteList.add(s)
+                    hotelList.add(s)
                     if (dest != null) {
                         destinationList.add(dest)
                     }
@@ -52,7 +60,7 @@ class SpatialSearchService {
                         destinationList.add(dest)
                     }
                 } else {
-                    hoteList.add(s)
+                    hotelList.add(s)
                     if (dest != null) {
                         destinationList.add(dest)
                     }
@@ -61,12 +69,12 @@ class SpatialSearchService {
         }
         val destinationsList: Set<Any> = LinkedHashSet(destinationList)
         log.info(destinationList.toString())
-        return FinalHotelRestaurantSpa(hoteList, spaList, restaurantList, destinationsList)
+        return FinalHotelRestaurantSpa(hotelList, spaList, restaurantList, destinationsList)
 
     }
-    suspend fun spatialserachservice1(pt:String,d:String): FinalHotelRestaurantSpa {
+    suspend fun spatialSearchService1(pt:String, d:String): FinalHotelRestaurantSpa {
         val client = HttpClient(CIO)
-        val response: String = client.get("http://localhost:8983/solr/Ihcls/select?&"){
+        val response: String = client.get(props.spatialSearchURL){
             url{
                 parameters.append("q", "*:*")
                 parameters.append("fq", "{!geofilt sfield=location}")
@@ -83,27 +91,27 @@ class SpatialSearchService {
             val city = item.city
             if (hotelname != null) {
                 if (hotelname.contains("Hotel")) {
-                    hoteList.add(hotelname)
+                    hotelList.add(hotelname)
                     if (city != null) {
-                        destinationList.add(city)
+                        destinationList.add(city[0])
                     }
                 }
                 if (hotelname.contains("Spa") || hotelname.contains("Resort")) {
                     spaList.add(hotelname)
                     restaurantList.add(hotelname)
                     if (city != null) {
-                        destinationList.add(city)
+                        destinationList.add(city[0])
                     }
                 } else {
-                    hoteList.add(hotelname)
+                    hotelList.add(hotelname)
                     if (city != null) {
-                        destinationList.add(city)
+                        destinationList.add(city[0])
                     }
                 }
             }
         }
         val destination: Set<Any> = LinkedHashSet(destinationList)
-        var finalHotelRestaurantSpa1 = FinalHotelRestaurantSpa(hoteList, spaList, restaurantList, destination)
+        val finalHotelRestaurantSpa1 = FinalHotelRestaurantSpa(hotelList, spaList, restaurantList, destination)
         return finalHotelRestaurantSpa1
     }
 }

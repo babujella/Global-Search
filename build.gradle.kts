@@ -33,7 +33,10 @@ dependencies {
     implementation("io.ktor:ktor-server-content-negotiation-jvm:$ktor_version")
     implementation("io.ktor:ktor-client-content-negotiation-jvm:$ktor_version")
 
-    implementation("com.google.code.gson:gson:2.8.9")
+    implementation("com.google.code.gson:gson:2.10")
     implementation("com.fasterxml.jackson.core:jackson-databind:2.14.0")
     implementation("ch.qos.logback:logback-classic:1.2.11")
+
+    implementation("org.kodein.di:kodein-di:7.14.0")
+    testImplementation("io.mockk:mockk:1.13.2")
 }
