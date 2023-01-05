@@ -1,4 +1,4 @@
-package com.ihcl_globalsearch.model
+package com.ihclglobalsearch.model
 
 import com.google.gson.annotations.SerializedName
 
@@ -72,7 +72,6 @@ data class ResponseHeader3 (
     var qTime: Int = 0,
     var params: Params3? = null
 )
-
 class Root (
     var responseHeader: ResponseHeader3? = null,
     var response: Response3? = null

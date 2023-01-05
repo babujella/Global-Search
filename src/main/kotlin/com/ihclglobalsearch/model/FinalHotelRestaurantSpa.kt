@@ -1,4 +1,4 @@
-package com.ihcl_globalsearch.model
+package com.ihclglobalsearch.model
 
 import com.google.gson.annotations.SerializedName
 

@@ -1,6 +1,11 @@
-package com.ihcl_globalsearch.model
+package com.ihclglobalsearch.model
 
 import com.google.gson.annotations.SerializedName
+
+data class Destinations(
+    var responseHeader:ResponseHeader,
+    var response:Response
+)
 
 
 data class  Doc(
@@ -29,9 +34,3 @@ data class ResponseHeader(
     var qTime:Int,
     var params: Params
 )
-
-data class Destinations(
-    var responseHeader:ResponseHeader,
-    var response:Response
-)
-

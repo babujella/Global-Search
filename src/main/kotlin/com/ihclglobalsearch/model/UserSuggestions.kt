@@ -1,4 +1,4 @@
-package com.ihcl_globalsearch.route
+package com.ihclglobalsearch.route
 
 
 data class Suggestions (
