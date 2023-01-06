@@ -39,4 +39,9 @@ dependencies {
 
     implementation("org.kodein.di:kodein-di:7.14.0")
     testImplementation("io.mockk:mockk:1.13.2")
+
+
+    // https://mvnrepository.com/artifact/org.apache.solr/solr-solrj
+    implementation("org.apache.solr:solr-solrj:8.11.1")
+
 }

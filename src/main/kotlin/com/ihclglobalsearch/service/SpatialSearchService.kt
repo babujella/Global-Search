@@ -15,7 +15,7 @@ import io.ktor.client.request.get
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-
+@Suppress("UNUSED_")
 class SpatialSearchService {
     private val log: Logger = LoggerFactory.getLogger(javaClass)
     private val hotelList = ArrayList<Any>()
@@ -24,7 +24,7 @@ class SpatialSearchService {
     private val destinationList = ArrayList<Any>()
 
     private val props = Configuration.env
-    suspend fun spatialsearchService(pt: String, d: String, destination: String, brandName: String)
+    suspend fun spatialService(pt: String, d: String, destination: String, brandName: String)
     : FinalHotelRestaurantSpa {
         val client = HttpClient(CIO)
         val response: String = client.get(props.spatialSearchURL) {
@@ -50,19 +50,19 @@ class SpatialSearchService {
                 if (s.contains("Hotel")) {
                     hotelList.add(s)
                     if (dest != null) {
-                        destinationList.add(dest)
+                        destinationList.add(dest[0])
                     }
                 }
                 if (s.contains("Spa") || s.contains("Resort")) {
                     spaList.add(s)
                     restaurantList.add(s)
                     if (dest != null) {
-                        destinationList.add(dest)
+                        destinationList.add(dest[0])
                     }
                 } else {
                     hotelList.add(s)
                     if (dest != null) {
-                        destinationList.add(dest)
+                        destinationList.add(dest[0])
                     }
                 }
             }
@@ -72,7 +72,7 @@ class SpatialSearchService {
         return FinalHotelRestaurantSpa(hotelList, spaList, restaurantList, destinationsList)
 
     }
-    suspend fun spatialSearchService1(pt:String, d:String): FinalHotelRestaurantSpa {
+    suspend fun spatialService1(pt:String, d:String): FinalHotelRestaurantSpa {
         val client = HttpClient(CIO)
         val response: String = client.get(props.spatialSearchURL){
             url{

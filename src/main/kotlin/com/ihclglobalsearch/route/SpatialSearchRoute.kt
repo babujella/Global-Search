@@ -1,6 +1,5 @@
 package com.ihclglobalsearch.route
 
-import com.ihclglobalsearch.dataimport.kodein
 import com.ihclglobalsearch.model.SpatialSearch
 import com.ihclglobalsearch.service.SpatialSearchService
 import io.ktor.server.application.Application
@@ -9,11 +8,8 @@ import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.routing.routing
 import io.ktor.server.routing.post
-import org.kodein.di.instance
 
 fun Application.spatialSearchRoute() {
-
-    val spatialSearchService by kodein.instance<SpatialSearchService>()
 
     routing {
         post("/Spatial") {
@@ -24,11 +20,11 @@ fun Application.spatialSearchRoute() {
             val brandName=latlongdetails.destination.brand_name
 
             if (city!=null && brandName!=null) {
-                val finalHotelRestaurantSpa = spatialSearchService.spatialsearchService(pt, d, city, brandName)
+                val finalHotelRestaurantSpa = SpatialSearchService().spatialService(pt, d, city, brandName)
                 call.respond(finalHotelRestaurantSpa)
             }
             else {
-                val hotelResortSpaData = spatialSearchService.spatialSearchService1(pt, d)
+                val hotelResortSpaData = SpatialSearchService().spatialService1(pt, d)
                 call.respond(hotelResortSpaData)
 
             }

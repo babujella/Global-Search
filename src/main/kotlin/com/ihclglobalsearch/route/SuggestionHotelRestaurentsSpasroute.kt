@@ -11,13 +11,11 @@ import org.kodein.di.instance
 
 fun Application.configureHotelRestaurantSpaRouting() {
 
-    val suggestions by kodein.instance<SuggestionHotelsRestaurantsSpa>()
-
     routing {
         get("{Taj}") {
             val params = call.request.uri
-            val response = suggestions.suggestions(params)
-            val finalHotelRestaurantSpa = suggestions.extracted(response, params)
+            val response = SuggestionHotelsRestaurantsSpa().suggestions(params)
+            val finalHotelRestaurantSpa = SuggestionHotelsRestaurantsSpa().extracted(response, params)
             call.respond(finalHotelRestaurantSpa!!)
         }
     }

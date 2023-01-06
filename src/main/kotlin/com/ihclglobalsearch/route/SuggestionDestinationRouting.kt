@@ -11,10 +11,10 @@ import org.kodein.di.instance
 
 
 fun Application.configureDestinationsRouting(){
-    val suggestionDestinationService by kodein.instance<SuggestionDestinationService>()
+
     routing {
         get("/destinations") {
-            val destinations=suggestionDestinationService.suggestionDestinations().response.docs
+            val destinations=SuggestionDestinationService().suggestionDestinations().response.docs
            call.respond(destinations)
         }
     }
